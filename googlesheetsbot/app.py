@@ -62,10 +62,8 @@ async def handle_amount(message: Message, state: FSMContext, transaction: Transa
         await state.set_state(Form.description)
         await message.answer("Введите описание")
         return
-        
+
     await message.answer("Введите сумму")
-
-
 
 
 @dp.message(Form.description)
