@@ -11,6 +11,10 @@ on:
 jobs:
   security-scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
 
     steps:
     - uses: actions/checkout@v4
@@ -45,6 +49,10 @@ jobs:
 
   docker-security:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
 
     steps:
     - uses: actions/checkout@v4
