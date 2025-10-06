@@ -11,6 +11,7 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp import web
 
+from googlesheetsbot import google_client
 from googlesheetsbot.config import settings
 from googlesheetsbot.google_client import GoogleClient
 from googlesheetsbot.keyboards.cache import KeyboardCache
@@ -106,6 +107,9 @@ class App:
             dispatcher=dp,
             bot=self.bot,
             secret_token=settings.secret_token,
+            keyboard_cache=self.keyboard_cache,
+            google_client=google_client,
+            transaction=Transaction(),
         )
         # Register webhook handler on application
         webhook_requests_handler.register(app, path=settings.webhook_path)
@@ -114,7 +118,12 @@ class App:
         setup_application(app, dp, bot=self.bot)
 
         # And finally start webserver
-        web.run_app(app, host=settings.server.host, port=settings.server.port)
+        web.run_app(
+            app,
+            host=settings.server.host,
+            port=settings.server.port,
+            loop=asyncio.get_event_loop(),
+        )
 
 
 if __name__ == "__main__":
