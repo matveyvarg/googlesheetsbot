@@ -1,0 +1,66 @@
+name: Security
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 2 * * 1' # Run weekly on Mondays at 2 AM
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.13"
+
+    - name: Install uv
+      run: pip install uv
+
+    - name: Install dependencies
+      run: uv sync
+
+    - name: Run safety check
+      run: |
+        pip install safety
+        safety check --json || echo "Safety check completed with issues"
+
+    - name: Run bandit security linter
+      run: |
+        pip install bandit
+        bandit -r . -f json -o bandit-report.json || echo "Bandit scan completed with issues"
+
+    - name: Upload bandit report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: bandit-report
+        path: bandit-report.json
+
+  docker-security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build Docker image
+      run: docker build -t googlesheetsbot:security-test .
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'googlesheetsbot:security-test'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'

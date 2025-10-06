@@ -57,9 +57,15 @@ async def handle_category(
 
 @dp.message(Form.amount)
 async def handle_amount(message: Message, state: FSMContext, transaction: Transaction):
-    transaction.amount = float(message.text)
-    await state.set_state(Form.description)
-    await message.answer("Введите описание")
+    if message.text is not None and message.text.isdigit():
+        transaction.amount = float(message.text)
+        await state.set_state(Form.description)
+        await message.answer("Введите описание")
+        return
+        
+    await message.answer("Введите сумму")
+
+
 
 
 @dp.message(Form.description)

@@ -33,8 +33,8 @@ class KeyboardCache:
         if not self.categories:
             await self.init()
         keyboard_json = self.categories
-        keyboard = []
-        row = []
+        keyboard: list[list[KeyboardButton]] = []
+        row: list[KeyboardButton] = []
         for item in keyboard_json:
             button = KeyboardButton(text=item)
             if len(row) < 3:

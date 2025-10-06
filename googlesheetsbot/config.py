@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     user_id: str
     redis_dsn: str
     keyboard_key: str = "keyboard"
-    server: Server = Field(default_factory=Server)
+    server: Server = Field(default_factory=Server)  # type: ignore[arg-type]
     secret_token: str
     webhook_path: str = "/webhook"
     base_webhook_url: str

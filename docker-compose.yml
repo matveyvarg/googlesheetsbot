@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+    env_file:
+      - .env
+    volumes:
+      # Mount source code for development (comment out for production)
+      - .:/app
+      # Mount Google service account credentials
+      - ./credentials:/app/credentials:ro
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - googlesheetsbot-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - googlesheetsbot-network
+
+  # Optional: Add a database if needed in the future
+  # postgres:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     POSTGRES_DB: googlesheetsbot
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: password
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+  #   networks:
+  #     - googlesheetsbot-network
+
+volumes:
+  redis_data:
+  # postgres_data:
+
+networks:
+  googlesheetsbot-network:
+    driver: bridge
