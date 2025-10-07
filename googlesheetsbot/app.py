@@ -116,14 +116,10 @@ class App:
 
         # Mount dispatcher startup and shutdown hooks to aiohttp application
         setup_application(app, dp, bot=self.bot)
-
-        # And finally start webserver
-        web.run_app(
-            app,
-            host=settings.server.host,
-            port=settings.server.port,
-            loop=asyncio.get_event_loop(),
-        )
+        runner = web.AppRunner(app)
+        await runner.setup()
+        site = web.TCPSite(runner, settings.server.host, settings.server.port)
+        await site.start()
 
 
 if __name__ == "__main__":
