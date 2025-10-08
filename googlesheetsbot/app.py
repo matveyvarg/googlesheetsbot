@@ -141,4 +141,5 @@ class App:
 if __name__ == "__main__":
     app = App()
     logging.basicConfig(level=settings.loglevel, stream=sys.stdout)
+    asyncio.run(app.run())
     
