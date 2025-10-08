@@ -134,8 +134,11 @@ class App:
         site = web.TCPSite(runner, settings.server.host, settings.server.port)
         await site.start()
 
+        while True:
+            await asyncio.sleep(3600)
+
 
 if __name__ == "__main__":
     app = App()
     logging.basicConfig(level=settings.loglevel, stream=sys.stdout)
-    asyncio.run(app.run())
+    
