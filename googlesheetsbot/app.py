@@ -17,6 +17,9 @@ from googlesheetsbot.keyboards.cache import KeyboardCache
 from googlesheetsbot.keyboards.static import TYPE_KEYBOARD
 from googlesheetsbot.models import EXPENSE, Form, Transaction
 
+
+logger = logging.getLogger(__name__)
+
 dp = Dispatcher()
 
 
@@ -81,6 +84,7 @@ async def handle_description(
 async def on_startup(bot: Bot) -> None:
     # If you have a self-signed SSL certificate, then you will need to send a public
     # certificate to Telegram
+    logger.debug("Sending webhook to telegram: %s", f"{settings.base_webhook_url}{settings.webhook_path}")
     await bot.set_webhook(
         f"{settings.base_webhook_url}{settings.webhook_path}",
         secret_token=settings.secret_token,
@@ -98,10 +102,15 @@ class App:
         self.keyboard_cache = KeyboardCache()
 
     async def run(self):
-        await self.keyboard_cache.init()
-        dp.startup.register(on_startup)
-        app = web.Application()
+        logger.info("STARTING APP...")
 
+        await self.keyboard_cache.init()
+        logger.debug("Keyboard initialized")
+
+        dp.startup.register(on_startup)
+        logger.debug("Startup hook registred")
+
+        app = web.Application()
         webhook_requests_handler = SimpleRequestHandler(
             dispatcher=dp,
             bot=self.bot,
@@ -109,9 +118,11 @@ class App:
         )
         # Register webhook handler on application
         webhook_requests_handler.register(app, path=settings.webhook_path)
+        logger.debug("Handler registred")
 
         # Mount dispatcher startup and shutdown hooks to aiohttp application
         setup_application(app, dp, bot=self.bot)
+        logger.debug("Application mounted")
 
         # And finally start webserver
         web.run_app(app, host=settings.server.host, port=settings.server.port)
@@ -119,5 +130,5 @@ class App:
 
 if __name__ == "__main__":
     app = App()
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    logging.basicConfig(level=settings.loglevel, stream=sys.stdout)
     asyncio.run(app.run())
