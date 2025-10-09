@@ -13,6 +13,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv for faster dependency management
@@ -37,7 +38,7 @@ EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/', timeout=10)" || exit 1
+    CMD curl --fail "http://localhost:8000/" || exit 1
 
 # Run the application
 CMD ["uv", "run", "python", "googlesheetsbot/app.py"]
