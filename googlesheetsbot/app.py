@@ -91,7 +91,7 @@ async def on_startup(bot: Bot) -> None:
         secret_token=settings.secret_token,
     )
 
-async def hello(request):
+async def healthcheck(request):
     return web.Response(text="Howdi!")
 
 
@@ -115,7 +115,7 @@ class App:
         logger.debug("Startup hook registred")
 
         app = web.Application()
-        app.add_routes([web.get('/', hello)])
+        app.add_routes([web.get('/', healthcheck)])
         webhook_requests_handler = SimpleRequestHandler(
             dispatcher=dp,
             bot=self.bot,
