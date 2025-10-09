@@ -46,7 +46,9 @@ class KeyboardCache:
             else:
                 keyboard.append(row)
                 row = [button]
-
+        if len(row) > 0:
+            keyboard.append(row)
+        logger.debug(f"Keyboard: %s", keyboard)
         return ReplyKeyboardMarkup(keyboard=keyboard)
 
     async def update_cache(self, value: str) -> None:

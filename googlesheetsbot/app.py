@@ -11,9 +11,8 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp import web
 
-from googlesheetsbot import google_client
 from googlesheetsbot.config import settings
-from googlesheetsbot.google_client import GoogleClient
+from googlesheetsbot.google_client import GoogleClient, google_client
 from googlesheetsbot.keyboards.cache import KeyboardCache
 from googlesheetsbot.keyboards.static import TYPE_KEYBOARD
 from googlesheetsbot.models import EXPENSE, Form, Transaction
