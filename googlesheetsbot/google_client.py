@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import logging
 import gspread
 
 from googlesheetsbot.config import settings
@@ -7,6 +7,7 @@ from googlesheetsbot.models import Transaction
 
 HEADER_ROWS = 2
 
+logger = logging.getLogger(__name__)
 
 def _get_worksheet_name() -> str:
     MONTHES = [
@@ -50,6 +51,7 @@ class GoogleClient:
             self.add_expense(row, transaction)
 
     def add_expense(self, row: int, transaction: Transaction) -> None:
+        logger.debug(f"Adding expense {transaction} at row {row}")
         col_cursor = settings.transactions_column
 
         # Add category
@@ -67,6 +69,7 @@ class GoogleClient:
         self.worksheet.update_cell(row=row, col=col_cursor, value=description)
 
     def get_categories(self) -> list[str]:
+        logger.debug("Getting categories")
         values = self.worksheet.col_values(col=settings.transactions_column)
         result = []
         for value in values[2:]:  # exclude headers
@@ -78,6 +81,7 @@ class GoogleClient:
                 continue
 
             result.append(trimmed_value)
+        logger.debug("Categories: %s", result)
         return result
 
 
