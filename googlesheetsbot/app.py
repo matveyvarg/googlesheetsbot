@@ -91,6 +91,9 @@ async def on_startup(bot: Bot) -> None:
         secret_token=settings.secret_token,
     )
 
+async def hello(request):
+    return web.Response(text="Howdi!")
+
 
 class App:
     bot: Bot
@@ -112,6 +115,7 @@ class App:
         logger.debug("Startup hook registred")
 
         app = web.Application()
+        app.add_routes([web.get('/', hello)])
         webhook_requests_handler = SimpleRequestHandler(
             dispatcher=dp,
             bot=self.bot,
@@ -120,6 +124,7 @@ class App:
             google_client=google_client,
             transaction=Transaction(),
         )
+
         # Register webhook handler on application
         webhook_requests_handler.register(app, path=settings.webhook_path)
         logger.debug("Handler registred")
@@ -141,4 +146,4 @@ class App:
 if __name__ == "__main__":
     app = App()
     logging.basicConfig(level=settings.loglevel, stream=sys.stdout)
-    
+    asyncio.run(app.run()) 

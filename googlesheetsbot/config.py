@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     secret_token: str
     webhook_path: str = "/webhook"
     base_webhook_url: str
+    loglevel: str = "INFO"
 
     model_config = SettingsConfigDict(env_nested_delimiter="__")
 
